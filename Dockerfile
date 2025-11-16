@@ -3,7 +3,7 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-#    Necessário para WeasyPrint
+# Necessário para WeasyPrint
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpango-1.0-0 \
@@ -26,9 +26,9 @@ COPY requirements.txt .
 # Instalar dependências
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY app app
+COPY app ./
 
 EXPOSE 8085
 
 # Comandos de inicialização
-CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8085" ]
+CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8085" ]

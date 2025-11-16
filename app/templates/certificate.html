@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificado de {{event.title}}</title>
+  </head>
+  <body>
+    <div class="certificate-wrapper">
+      <div class="certificate-border">
+        <div class="certificate-inner">
+          <div class="header">
+            <div class="logo-placeholder">🎓</div>
+            <h1>Certificado</h1>
+            <p class="subtitle">de Participação</p>
+          </div>
+
+          <div class="content">
+            <p class="certify-text">Certificamos, para os devidos fins, que</p>
+
+            <span class="participant-name">
+              {{ user.name }}
+              <span class="participant-id">(Matrícula: {{ user.id }})</span>
+            </span>
+
+            <p>participou do evento acadêmico</p>
+
+            <span class="event-title">"{{ event.title }}"</span>
+
+            <p class="date-info">
+              realizado no período de <strong>{{ event.start_date }}</strong> a
+              <strong>{{ event.end_date }}</strong>
+            </p>
+          </div>
+
+          <div class="footer">
+            <div class="validation-section">
+              <p class="validation-title">Autenticidade do Documento</p>
+              <div class="auth-code">{{ code }}</div>
+
+              <a
+                href="validation_url"
+                class="validation-title"
+                style="margin-top: 25px"
+              >
+                Validação Online
+              </a>
+            </div>
+
+            <div class="qr-section">
+              <p class="qr-label">
+                Aponte a câmera do seu celular para validar
+              </p>
+              <img
+                src="data:image/png;base64,{{ qr_code }}"
+                alt="QR Code de validação"
+                width="20"
+                height="20"
+              />
+            </div>
+          </div>
+
+          <div class="seal">VÁLIDO</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
