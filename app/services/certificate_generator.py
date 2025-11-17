@@ -13,9 +13,8 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 
 
-def generate_certificate(user, event):
-    # Certificate code
-    code = uuid.uuid4().hex.upper()
+def generate_certificate(user, event, certificate):
+    code = certificate["hash"]
     validation_url = f"https://localhost:8085/certificados/validar/{code}"
 
     qr_base64 = _generate_qrcode(validation_url)
@@ -31,19 +30,20 @@ def generate_certificate(user, event):
 
     pdf_path = os.path.join("/tmp", f"certificado_{code}.pdf")
     css_path = os.path.join(STATIC_DIR, "base.css")
+
     HTML(string=html_content).write_pdf(
-        pdf_path, stylesheets=[CSS(filename=css_path)])
+        pdf_path, stylesheets=[CSS(filename=css_path)]
+    )
 
     return pdf_path
 
 
 def _generate_qrcode(validation_url):
-    # Configura QR pequeno
     qr = qrcode.QRCode(
-        version=1,                 # controla o tamanho
+        version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=5,                # TAMANHO DO QR (diminua para reduzir)
-        border=2,                  # borda menor
+        box_size=5,
+        border=2,
     )
     qr.add_data(validation_url)
     qr.make(fit=True)
