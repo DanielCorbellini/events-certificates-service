@@ -9,6 +9,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+STORAGE_DIR = os.path.join(BASE_DIR, "storage/certificados")
 
 env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 
@@ -28,7 +29,7 @@ def generate_certificate(user, event, certificate):
         validation_url=validation_url
     )
 
-    pdf_path = os.path.join("/tmp", f"certificado_{code}.pdf")
+    pdf_path = os.path.join(STORAGE_DIR, f"certificado_{code}.pdf")
     css_path = os.path.join(STATIC_DIR, "base.css")
 
     HTML(string=html_content).write_pdf(
