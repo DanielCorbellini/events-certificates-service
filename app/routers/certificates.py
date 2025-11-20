@@ -2,17 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from db import get_db
-from models.request_models import CertificateRequest
-from services.certificate_service import issue_certificate_service
-from repositories.certificado_repository import get_certificate_with_details
+from models.request_models import UserRequest
+from services.certificate_service import issue_certificate_service, get_user_certifications, get_certification_details
 import os
+
 
 router = APIRouter(prefix="/certificados", tags=["Certificados"])
 
 
-@router.post("/emitir")
-async def issue_certificate(data: CertificateRequest, db: Session = Depends(get_db)):
-    pdf_path = issue_certificate_service(db, data)
+@router.post("/emitir/{id_inscricao}")
+async def issue_certificate(id_inscricao: int, db: Session = Depends(get_db)):
+    pdf_path = issue_certificate_service(db, id_inscricao)
 
     if not os.path.exists(pdf_path):
         raise HTTPException(
@@ -28,7 +28,7 @@ async def issue_certificate(data: CertificateRequest, db: Session = Depends(get_
 
 @router.get("/validar/{hash_confirmacao}")
 async def validate_and_download(hash_confirmacao: str, db: Session = Depends(get_db)):
-    cert = get_certificate_with_details(db, hash_confirmacao)
+    cert = get_certification_details(db, hash_confirmacao)
 
     if not cert:
         raise HTTPException(
@@ -49,5 +49,11 @@ async def validate_and_download(hash_confirmacao: str, db: Session = Depends(get
 
 
 @router.get("/")
-async def get_user_certificates():  # user_id e get_event_details()
-    pass
+async def list_user_certificates(data: UserRequest, db: Session = Depends(get_db)):
+    userCertifications = get_user_certifications(db, data.id_usuario)
+
+    if not userCertifications:
+        raise HTTPException(
+            status_code=404, detail="Usuário não possui nenhum certificado")
+
+    return userCertifications

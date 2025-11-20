@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
+
 def get_existing_certificate(db: Session, id_checkin: int):
     return db.execute(
         text("SELECT id_certificado FROM certificados WHERE id_checkin = :id"),
@@ -31,3 +32,24 @@ def get_certificate_with_details(db: Session, hash_confirmacao: str):
         """),
         {"hash": hash_confirmacao}
     ).fetchone()
+
+
+def get_user_certificates(db: Session, id_usuario: int):
+    return db.execute(
+        text("""
+            SELECT
+                hash_confirmacao,
+                data_emissao,
+                titulo,
+                data_inicio,
+                data_fim,
+                local
+            FROM
+                certificados
+                LEFT JOIN checkins USING (id_checkin)
+                LEFT JOIN inscricoes USING (id_inscricao)
+                LEFT JOIN eventos using (id_evento)
+            WHERE
+                id_usuario = :id"""),
+        {"id": id_usuario}
+    ).fetchall()

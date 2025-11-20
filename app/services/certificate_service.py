@@ -6,13 +6,17 @@ from repositories.evento_repository import get_event_end_date
 from repositories.certificado_repository import (
     get_existing_certificate,
     insert_certificate,
-    get_certificate_with_details
+    get_certificate_with_details,
+    get_user_certificates
 )
 from utils.certificate_generator import generate_certificate
 from services.exceptions import CertificateError
+from repositories.inscricao_repository import get_subscription_details
 
 
-def issue_certificate_service(db: Session, data):
+def issue_certificate_service(db: Session, id_inscricao):
+    data = get_subscription_details(db, id_inscricao)
+
     # 1. Validar check-in
     checkin = get_checkin_by_inscricao(db, data.id_inscricao)
     if not checkin:
@@ -59,3 +63,11 @@ def issue_certificate_service(db: Session, data):
     )
 
     return pdf_path
+
+
+def get_certification_details(db: Session, hash_confirmacao: str):
+    return get_certificate_with_details(db, hash_confirmacao)
+
+
+def get_user_certifications(db: Session, id_usuario: int):
+    return get_user_certificates(db, id_usuario)
