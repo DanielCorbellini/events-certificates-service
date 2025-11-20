@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from db import get_db
-from models.request_models import UserRequest
+from models.response_models import CertificateResponse, Certificate, Event
 from services.certificate_service import issue_certificate_service, get_user_certifications, get_certification_details
 import os
 
@@ -48,12 +48,25 @@ async def validate_and_download(hash_confirmacao: str, db: Session = Depends(get
     )
 
 
-@router.get("")
+@router.get("", response_model=CertificateResponse)
 async def list_user_certificates(id_usuario: int, db: Session = Depends(get_db)):
-    userCertifications = get_user_certifications(db, id_usuario)
+    rows = get_user_certifications(db, id_usuario)
 
-    if not userCertifications:
+    if not rows:
         raise HTTPException(
             status_code=404, detail="Usuário não possui nenhum certificado")
 
-    return userCertifications
+    certificados = [
+        Certificate(
+            hash_confirmacao=row['hash_confirmacao'],
+            data_emissao=row['data_emissao'],
+            evento=Event(
+                titulo=row['titulo'],
+                data_inicio=row['data_inicio'],
+                data_fim=row['data_fim'],
+                local=row['local']
+            )
+        ) for row in rows
+    ]
+
+    return CertificateResponse(certificados=certificados)
