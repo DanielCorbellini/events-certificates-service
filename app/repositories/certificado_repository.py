@@ -35,7 +35,7 @@ def get_certificate_with_details(db: Session, hash_confirmacao: str):
 
 
 def get_user_certificates(db: Session, id_usuario: int):
-    return db.execute(
+    result = db.execute(
         text("""
             SELECT
                 hash_confirmacao,
@@ -52,4 +52,6 @@ def get_user_certificates(db: Session, id_usuario: int):
             WHERE
                 id_usuario = :id"""),
         {"id": id_usuario}
-    ).fetchall()
+    )
+
+    return result.mappings().all()

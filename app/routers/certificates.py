@@ -49,8 +49,8 @@ async def validate_and_download(hash_confirmacao: str, db: Session = Depends(get
 
 
 @router.get("/")
-async def list_user_certificates(data: UserRequest, db: Session = Depends(get_db)):
-    userCertifications = get_user_certifications(db, data.id_usuario)
+async def list_user_certificates(id_usuario: int, db: Session = Depends(get_db)):
+    userCertifications = get_user_certifications(db, id_usuario)
 
     if not userCertifications:
         raise HTTPException(
