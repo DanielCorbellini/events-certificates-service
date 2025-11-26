@@ -9,7 +9,7 @@ app = FastAPI(title="Certificado Service")
 
 app.include_router(certificates.router)
 
-JWT_SECRET = os.getenv("JWT_SECRET")
+GATEWAY_SECRET = os.getenv("GATEWAY_SECRET")
 JWT_ALGORITHM = "HS256"
 
 
@@ -27,7 +27,7 @@ async def db_session_middleware(request, call_next):
 
     try:
         # Decodifica e valida o token
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, GATEWAY_SECRET, algorithms=[JWT_ALGORITHM])
 
         # Injeta o JWT no estado da request
         request.state.jwt = payload
