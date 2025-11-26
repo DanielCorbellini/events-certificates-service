@@ -16,7 +16,7 @@ env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 
 def generate_certificate(user, event, certificate):
     code = certificate["hash"]
-    validation_url = f"https://localhost:8085/certificados/validar/{code}"
+    validation_url = f"http://177.44.248.81:8080/certificados/validar/{code}"
 
     qr_base64 = _generate_qrcode(validation_url)
 
