@@ -14,31 +14,16 @@ JWT_ALGORITHM = "HS256"
 
 
 @app.middleware("http")
-async def db_session_middleware(request, call_next):
-    auth_header = request.headers.get("Authorization")
+async def gateway_key_middleware(request: Request, call_next):
+    gateway_key = request.headers.get("X-Gateway-Key")
 
-    if not auth_header or not auth_header.startswith("Bearer "):
+    if gateway_key is None or gateway_key != GATEWAY_SECRET:
         return JSONResponse(
-            status_code=401,
-            content={"error": "Token não fornecido"}
+            status_code=403,
+            content={"error": "Acesso negado"}
         )
 
-    token = auth_header.split(" ")[1]
-
-    try:
-        # Decodifica e valida o token
-        payload = jwt.decode(token, GATEWAY_SECRET, algorithms=[JWT_ALGORITHM])
-
-        # Injeta o JWT no estado da request
-        request.state.jwt = payload
-
-    except JWTError as e:
-        return JSONResponse(
-            status_code=401,
-            content={"error": "Token inválido ou expirado", "details": str(e)}
-        )
-    response = await call_next(request)
-    return response
+    return await call_next(request)
 
 
 @app.exception_handler(CertificateError)
